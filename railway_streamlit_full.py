@@ -40,7 +40,7 @@ if not token:
 try:
     decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
     st.write("Decoded Token:", decoded)
-    username = decoded.get("username")
+    username = decoded.get("user", {}).get("username", "User")
     st.success(f"✅ Welcome {username}")
 except:
     st.error("🚫 Session expired or invalid. Please login again.")
