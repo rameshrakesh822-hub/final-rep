@@ -39,7 +39,7 @@ if not token:
 
 try:
     decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    username = decoded.get("username", {}).get("username", "username")
+    username = decoded.get("username", "User")
     st.success(f"✅ Welcome {username}")
 except:
     st.error("🚫 Session expired or invalid. Please login again.")
@@ -794,7 +794,7 @@ PAGES = {
 st.set_page_config(page_title="Railway Maintenance System", layout="wide")
 with st.sidebar:
     st.markdown("## Menu")
-    page = st.radio("Go to", list(PAGES.keys()), index=list(PAGES.keys()).index(st.session_state.get("page", "Dashboard")))
+    page = st.radio("Go to", list(PAGES.keys()), index=list(PAGES.keys()).index(st.session_state.get("page", "Dashboard")),key="102")
     st.markdown("---")
     st.write(f"Logged in (SYSTEM): {st.session_state.get('system_user')}\nEngineer: {st.session_state.get('engineer')}")
     st.markdown("---")
@@ -1583,7 +1583,7 @@ PAGES = {
 st.set_page_config(page_title="Railway Maintenance System", layout="wide")
 with st.sidebar:
     st.markdown("## Menu")
-    page = st.radio("Go to", list(PAGES.keys()), index=list(PAGES.keys()).index(st.session_state.get("page", "Dashboard")))
+    page = st.radio("Go to", list(PAGES.keys()), index=list(PAGES.keys()).index(st.session_state.get("page", "Dashboard")),key="101")
     st.markdown("---")
     st.write(f"Logged in (SYSTEM): {st.session_state.get('system_user')}\nEngineer: {st.session_state.get('engineer')}")
     st.markdown("---")
