@@ -39,6 +39,7 @@ if not token:
 
 try:
     decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    st.write("Decoded Token:", decoded)
     username = decoded.get("username")
     st.success(f"✅ Welcome {username}")
 except:
