@@ -1,0 +1,15 @@
+<<<<<<< HEAD
+services:
+  - type: web
+    name: railway-streamlit
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run railway_streamlit_full.py --server.port $PORT --server.address 0.0.0.0
+=======
+services:
+  - type: web
+    name: railway-streamlit
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run railway_streamlit_full.py --server.port $PORT --server.address 0.0.0.0
+>>>>>>> 8793382dee009a0b4d3559fb67c06a3b5340f857

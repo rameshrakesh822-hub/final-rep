@@ -1,0 +1,8 @@
+<<<<<<< HEAD
+streamlit
+pandas
+PyJWT
+=======
+streamlit
+pandas
+>>>>>>> 8793382dee009a0b4d3559fb67c06a3b5340f857
