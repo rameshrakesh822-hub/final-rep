@@ -28,20 +28,15 @@ import io
 import os
 import base64
 
-# ✅ PAGE CONFIG (PC + MOBILE FIX)
-st.set_page_config(
-    page_title="Railway Maintenance System",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# ✅ GLOBAL RESPONSIVE CSS (DO NOT REMOVE)
 st.markdown("""
 <style>
+/* ===== GLOBAL LAYOUT FIX ===== */
 .block-container {
     padding: 1rem;
+    padding-top: 5.5rem;   /* ✅ Space for top navbar */
 }
 
+/* ===== MOBILE RESPONSIVE FIX ===== */
 @media (max-width: 768px) {
     .stColumns {
         flex-direction: column !important;
@@ -61,19 +56,13 @@ st.markdown("""
     }
 }
 
+/* ===== TABLE RESPONSIVE FIX ===== */
 [data-testid="stDataFrame"] {
     width: 100% !important;
 }
 </style>
 """, unsafe_allow_html=True)
-st.markdown("""
-<style>
-/* FIX: Push content below fixed top navigation */
-header, .block-container {
-    margin-top: 80px !important;
-}
-</style>
-""", unsafe_allow_html=True)
+
 
 # ✅ JWT SECRET (MOVE TO ENV LATER FOR SECURITY)
 SECRET_KEY = "soorya123"   # same as Node.js JWT secret
