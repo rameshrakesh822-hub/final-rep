@@ -71,6 +71,27 @@ section[data-testid="stSidebar"] div[role="radiogroup"] > label {
 }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+section[data-testid="stSidebar"],
+section[data-testid="stSidebar"] > div {
+    background-color: #0f172a;   /* Dark UI background */
+}
+
+section[data-testid="stSidebar"] {
+    border-right: 1px solid #1e293b;
+}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] div {
+    color: inherit;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 
 # ✅ JWT SECRET (MOVE TO ENV LATER FOR SECURITY)
