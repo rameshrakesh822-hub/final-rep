@@ -29,29 +29,43 @@ import os
 import base64
 SECRET_KEY = "soorya123"   # ⚠️ SAME as Node.js JWT secret
 
+
 query_params = st.query_params
 token = query_params.get("token")
+
 if isinstance(token, list):
     token = token[0]
 
-if not token:
-    login_url = "https://railways-r1m.onrender.com/login"
-    st.markdown(
-        f"""
-        <meta http-equiv="refresh" content="0; url={login_url}">
-        """,
-        unsafe_allow_html=True
-    )
-    st.stop()
+# ✅ STEP 1: If user already authenticated in session, DO NOT re-check token
+if "authenticated_user" not in st.session_state:
 
-try:
-    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    username = decoded.get("user", {}).get("username", "User")
-    st.success(f"✅ Welcome {username}")
-    st.query_params.clear()
-except:
-    st.error("🚫 Session expired or invalid. Please login again.")
-    st.stop()
+    if not token:
+        login_url = "https://railways-r1m.onrender.com/login"
+        st.markdown(
+            f'<meta http-equiv="refresh" content="0; url={login_url}">',
+            unsafe_allow_html=True
+        )
+        st.stop()
+
+    try:
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        username = decoded.get("user", {}).get("username", "User")
+
+        # ✅ SAVE LOGIN IN SESSION
+        st.session_state.authenticated_user = username
+
+        st.success(f"✅ Welcome {username}")
+
+        # ✅ OPTIONAL: Clear token ONLY AFTER saving session
+        # st.query_params.clear()
+
+    except:
+        st.error("🚫 Session expired or invalid. Please login again.")
+        st.stop()
+
+# ✅ STEP 2: Use session data everywhere else
+username = st.session_state.authenticated_user
+
     
 
 # ---------------- Streamlit Compatibility ----------------
