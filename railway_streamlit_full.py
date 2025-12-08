@@ -66,6 +66,14 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+/* FIX: Push content below fixed top navigation */
+header, .block-container {
+    margin-top: 80px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ✅ JWT SECRET (MOVE TO ENV LATER FOR SECURITY)
 SECRET_KEY = "soorya123"   # same as Node.js JWT secret
