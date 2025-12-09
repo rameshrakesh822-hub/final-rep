@@ -4,4 +4,7 @@ pandas
 PyJWT
 streamlit
 pandas
+pymongo
+dnspython
+python-dotenv
 
