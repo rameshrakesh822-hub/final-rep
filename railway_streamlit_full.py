@@ -818,38 +818,65 @@ def page_trains():
                 r = cur.fetchone()
         if r:
             with st.form("edit_train"):
-                train_name_new = st.text_input("Train Name", value=r.get('train_name') if isinstance(r, dict) else (r['train_name'] or ""))
-                source_new = st.text_input("Source", value=r.get('source') if isinstance(r, dict) else (r['source'] or ""))
-                dest_new = st.text_input("Destination", value=r.get('destination') if isinstance(r, dict) else (r['destination'] or ""))
-                if st.form_submit_button("Save changes"):
-                    with get_conn() as conn:
-                        if USE_MONGO:
-                            conn.db.trains.update_one({'train_no': sel}, {'$set': {
-                                'train_name': train_name_new.strip(),
-                                'source': source_new.strip(),
-                                'destination': dest_new.strip()
-                            }})
-                        else:
-                            cur = conn.cursor()
-                            cur.execute("UPDATE trains SET train_name=?, source=?, destination=? WHERE train_no=?",
-                                        (train_name_new.strip(), source_new.strip(), dest_new.strip(), sel))
-                            conn.commit()
-                    show_success("Train updated.")
-                    st.stop()
-                if st.button("Delete train (remove assignments)"):
-                    confirm = st.checkbox("Confirm delete train and its assignments")
-                    if confirm:
-                        with get_conn() as conn:
-                            if USE_MONGO:
-                                conn.db.trains.delete_one({'train_no': sel})
-                                conn.db.train_coaches.delete_many({'train_no': sel})
-                            else:
-                                cur = conn.cursor()
-                                cur.execute("DELETE FROM trains WHERE train_no=?", (sel,))
-                                cur.execute("DELETE FROM train_coaches WHERE train_no=?", (sel,))
-                                conn.commit()
-                        show_success("Train and assignments removed.")
-                        st.stop()
+               train_name_new = st.text_input(
+               "Train Name",
+                  value=r.get('train_name') if isinstance(r, dict) else (r['train_name'] or "")
+               )
+               source_new = st.text_input(
+                   "Source",
+                   value=r.get('source') if isinstance(r, dict) else (r['source'] or "")
+               )
+               dest_new = st.text_input(
+                   "Destination",
+                    value=r.get('destination') if isinstance(r, dict) else (r['destination'] or "")
+               )
+
+               update_btn = st.form_submit_button("Save changes")
+
+# ✅ UPDATE LOGIC (SAFE)
+        if update_btn:
+            with get_conn() as conn:
+                if USE_MONGO:
+                     conn.db.trains.update_one(
+                         {'train_no': sel},
+                         {'$set': {
+                              'train_name': train_name_new.strip(),
+                              'source': source_new.strip(),
+                              'destination': dest_new.strip()
+                        }}
+                     )
+                else:
+                    cur = conn.cursor()
+                    cur.execute(
+                        "UPDATE trains SET train_name=?, source=?, destination=? WHERE train_no=?",
+                        (train_name_new.strip(), source_new.strip(), dest_new.strip(), sel)
+                    )
+                    conn.commit()
+
+            show_success("Train updated.")
+            st.rerun()
+
+
+# ✅ ✅ DELETE BUTTON MUST BE OUTSIDE THE FORM
+        st.markdown("---")
+        if st.button("Delete train (remove assignments)"):
+
+            confirm = st.checkbox("Confirm delete train and its assignments")
+
+            if confirm:
+                with get_conn() as conn:
+                    if USE_MONGO:
+                        conn.db.trains.delete_one({'train_no': sel})
+                        conn.db.train_coaches.delete_many({'train_no': sel})
+                    else:
+                        cur = conn.cursor()
+                        cur.execute("DELETE FROM trains WHERE train_no=?", (sel,))
+                        cur.execute("DELETE FROM train_coaches WHERE train_no=?", (sel,))
+                        conn.commit()
+
+                show_success("Train and assignments removed.")
+                st.rerun()
+
 
 # --- Assign coaches ---
 
