@@ -691,9 +691,22 @@ def page_coaches():
         if r:
             with st.form("edit_coach"):
                 c1, c2 = st.columns(2)
-                type_new = c1.text_input("Type", value=r.get('type') if isinstance(r, dict) else (r['type'] or ""))
-                km_new = c2.text_input("KM Run", value=str((r.get('km_run') if isinstance(r, dict) else r['km_run']) or 0))
-                last_new = st.text_input("Last maintenance (dd-mm-YYYY)", value=r.get('last_maintenance') if isinstance(r, dict) else (r['last_maintenance'] or ""))
+
+                type_new = c1.text_input(
+                    "Type",
+                    value=r.get('type') if isinstance(r, dict) else (r['type'] or "")
+                )
+
+                km_new = c2.text_input(
+                    "KM Run",
+                    value=str((r.get('km_run') if isinstance(r, dict) else r['km_run']) or 0)
+                )
+
+                last_new = st.text_input(
+                    "Last maintenance (dd-mm-YYYY)",
+                    value=r.get('last_maintenance') if isinstance(r, dict) else (r['last_maintenance'] or "")
+                )
+
                 status_new = st.selectbox(
                     "Status",
                     ["Active", "Inactive", "Removed"],
@@ -701,33 +714,56 @@ def page_coaches():
                     else (1 if ((r.get('status') if isinstance(r, dict) else r['status']) == 'Inactive') else 2),
                     key="3"
                 )
-                if st.form_submit_button("Save changes"):
-                    try:
-                        kmv = int(km_new) if km_new else 0
-                    except:
-                        show_error("KM Run must be integer.")
-                    else:
-                        with get_conn() as conn:
-                            if USE_MONGO:
-                                conn.db.coaches.update_one({'coach_id': sel}, {'$set': {
+
+                update_btn = st.form_submit_button("Save changes")
+
+
+            # ---------------- UPDATE LOGIC ----------------
+            if update_btn:
+                try:
+                    kmv = int(km_new) if km_new else 0
+                except:
+                    show_error("KM Run must be integer.")
+                else:
+                    with get_conn() as conn:
+                        if USE_MONGO:
+                            conn.db.coaches.update_one(
+                                {'coach_id': sel},
+                                {'$set': {
                                     'type': type_new.strip() or None,
                                     'last_maintenance': last_new.strip() or None,
                                     'km_run': kmv,
                                     'status': status_new
-                                }})
-                            else:
-                                cur = conn.cursor()
-                                cur.execute("""
-                                    UPDATE coaches
-                                    SET type=?, last_maintenance=?, km_run=?, status=?
-                                    WHERE coach_id=?
-                                """, (type_new.strip() or None, last_new.strip() or None, kmv, status_new, sel))
-                                conn.commit()
-                        show_success("Coach updated.")
-                        st.stop()
-                if st.button("Delete coach (permanent)"):
-                    confirm = st.checkbox("Confirm permanent delete of coach and related data")
-                    if confirm:
+                                }}
+                            )
+                        else:
+                            cur = conn.cursor()
+                            cur.execute("""
+                                UPDATE coaches
+                                SET type=?, last_maintenance=?, km_run=?, status=?
+                                WHERE coach_id=?
+                            """, (type_new.strip() or None, last_new.strip() or None, kmv, status_new, sel))
+                            conn.commit()
+
+                    show_success("Coach updated.")
+                    st.rerun()
+
+
+            # ---------------- DELETE LOGIC ----------------
+            st.markdown("---")
+
+            if st.button("Delete coach (permanent)"):
+                st.session_state["confirm_delete_coach"] = True
+
+
+            if st.session_state.get("confirm_delete_coach"):
+
+                st.warning("⚠️ This will permanently delete the coach and ALL related data!")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    if st.button("✅ YES, DELETE"):
                         with get_conn() as conn:
                             if USE_MONGO:
                                 conn.db.coaches.delete_one({'coach_id': sel})
@@ -739,8 +775,17 @@ def page_coaches():
                                 cur.execute("DELETE FROM train_coaches WHERE coach_id=?", (sel,))
                                 cur.execute("DELETE FROM maintenance_records WHERE coach_id=?", (sel,))
                                 conn.commit()
+
+                        del st.session_state["confirm_delete_coach"]
+
                         show_success("Coach and related data deleted.")
-                        st.stop()
+                        st.rerun()
+
+                with col2:
+                    if st.button("❌ Cancel"):
+                        del st.session_state["confirm_delete_coach"]
+                        st.rerun()
+
 
 # --- Trains management ---
 
