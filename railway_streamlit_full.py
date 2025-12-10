@@ -859,23 +859,43 @@ def page_trains():
 
 # ✅ ✅ DELETE BUTTON MUST BE OUTSIDE THE FORM
         st.markdown("---")
+        st.markdown("---")
+
+        # Step 1: First click → ask for confirmation
         if st.button("Delete train (remove assignments)"):
+            st.session_state["confirm_delete_train"] = True
 
-            confirm = st.checkbox("Confirm delete train and its assignments")
 
-            if confirm:
-                with get_conn() as conn:
-                    if USE_MONGO:
-                        conn.db.trains.delete_one({'train_no': sel})
-                        conn.db.train_coaches.delete_many({'train_no': sel})
-                    else:
-                        cur = conn.cursor()
-                        cur.execute("DELETE FROM trains WHERE train_no=?", (sel,))
-                        cur.execute("DELETE FROM train_coaches WHERE train_no=?", (sel,))
-                        conn.commit()
+        # Step 2: Show confirm button only after first click
+        if st.session_state.get("confirm_delete_train"):
 
-                show_success("Train and assignments removed.")
-                st.rerun()
+            st.warning("⚠️ Are you sure you want to permanently delete this train and all assignments?")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if st.button("✅ YES, DELETE"):
+                    with get_conn() as conn:
+                        if USE_MONGO:
+                            conn.db.trains.delete_one({'train_no': sel})
+                            conn.db.train_coaches.delete_many({'train_no': sel})
+                        else:
+                            cur = conn.cursor()
+                            cur.execute("DELETE FROM trains WHERE train_no=?", (sel,))
+                            cur.execute("DELETE FROM train_coaches WHERE train_no=?", (sel,))
+                            conn.commit()
+
+                    # ✅ RESET STATE
+                    del st.session_state["confirm_delete_train"]
+
+                    show_success("Train and assignments removed successfully.")
+                    st.rerun()
+
+            with col2:
+                if st.button("❌ Cancel"):
+                    del st.session_state["confirm_delete_train"]
+                    st.rerun()
+
 
 
 # --- Assign coaches ---
