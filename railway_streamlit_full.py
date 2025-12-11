@@ -402,12 +402,25 @@ def get_due_maintenance():
 # CSS tweaks
 st.markdown("""
 <style>
+
+/* REAL STREAMLIT UI BACKGROUND */
+[data-testid="stAppViewContainer"] > .main {
+    background-color: #F4F6F8 !important;  /* <-- your desired color */
+}
+
+/* SIDEBAR BACKGROUND */
+section[data-testid="stSidebar"] {
+    background-color: #F4F6F8 !important;  /* Match UI */
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
 /* ===== GLOBAL LAYOUT FIX ===== */
 /* MAIN APP BACKGROUND COLOR */
-html, body, [data-testid="stAppViewContainer"] {
-    background-color: #F4F6F8 !important;   /* Light grey example */
-}
-1
+
 .block-container {
     padding: 1rem;
     padding-top: 5.5rem;   /* ✅ Space for top navbar */
