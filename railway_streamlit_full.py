@@ -402,19 +402,63 @@ def get_due_maintenance():
 # CSS tweaks
 st.markdown("""
 <style>
+/* ----- SAFE Streamlit UI background (main panel only) ----- */
 
-/* REAL STREAMLIT UI BACKGROUND */
+/* Ensure top-level app container is transparent so we don't accidentally cover sidebar/header */
+[data-testid="stAppViewContainer"] {
+    background-color: transparent !important;
+}
+
+/* Main content background (this is the Streamlit "page" area) */
 [data-testid="stAppViewContainer"] > .main {
-    background-color: #F4F6F8 !important;  /* <-- your desired color */
+    background-color: #F4F6F8 !important;   /* <-- desired app background */
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }
 
-/* SIDEBAR BACKGROUND */
+/* Sidebar: match background and ensure it sits above other elements */
 section[data-testid="stSidebar"] {
-    background-color: #F4F6F8 !important;  /* Match UI */
+    background-color: #F4F6F8 !important;   /* <-- same color as main */
+    position: relative !important;
+    z-index: 1200 !important;               /* keep sidebar on top */
+    border-right: 1px solid #e5e7eb;
 }
 
+/* Sidebar: labels / radio / text color (force visible color) */
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] div,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] p {
+    color: #0f172a !important;               /* dark text color */
+}
+
+/* Header: make sure it remains above main content and is transparent */
+header, header > div {
+    position: sticky !important;
+    top: 0;
+    z-index: 1500 !important;
+    background: transparent !important;
+}
+
+/* If some Streamlit internal card/panel covers sidebar, make sure it is transparent */
+[data-testid="stAppViewContainer"] .css-1offfwp, 
+[data-testid="stAppViewContainer"] .css-1d391kg,
+[data-testid="stAppViewContainer"] .main > div:first-child {
+    background: transparent !important;
+}
+
+/* Mobile responsiveness: keep stacking but preserve spacing */
+@media (max-width: 768px) {
+    .stColumns { flex-direction: column !important; gap: 1rem; }
+    .stMetric { text-align: center; }
+    button, input { width: 100%; }
+}
+
+/* Table */
+[data-testid="stDataFrame"] { width: 100% !important; }
 </style>
 """, unsafe_allow_html=True)
+
 
 st.markdown("""
 <style>
