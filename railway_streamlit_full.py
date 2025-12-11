@@ -403,6 +403,11 @@ def get_due_maintenance():
 st.markdown("""
 <style>
 /* ===== GLOBAL LAYOUT FIX ===== */
+/* MAIN APP BACKGROUND COLOR */
+html, body, [data-testid="stAppViewContainer"] {
+    background-color: #F4F6F8 !important;   /* Light grey example */
+}
+1
 .block-container {
     padding: 1rem;
     padding-top: 5.5rem;   /* ✅ Space for top navbar */
