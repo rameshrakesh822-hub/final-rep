@@ -411,14 +411,14 @@ st.markdown("""
 
 /* Main content background (this is the Streamlit "page" area) */
 [data-testid="stAppViewContainer"] > .main {
-    background-color: #F4F6F8 !important;   /* <-- desired app background */
+    background-color: #EAF3FF !important;   /* <-- desired app background */
     padding-left: 1rem !important;
     padding-right: 1rem !important;
 }
 
 /* Sidebar: match background and ensure it sits above other elements */
 section[data-testid="stSidebar"] {
-    background-color: #F4F6F8 !important;   /* <-- same color as main */
+    background-color: #EAF3FF !important;   /* <-- same color as main */
     position: relative !important;
     z-index: 1200 !important;               /* keep sidebar on top */
     border-right: 1px solid #e5e7eb;
