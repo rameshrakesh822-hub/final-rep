@@ -1409,7 +1409,7 @@ def page_predictive_maintenance():
         train_coaches_collection.find({"train_no": selected_train})
     )
 
-    if len(train_coach_docs) == 0:
+    if not train_coach_docs:
         st.warning("No coaches mapped to this train")
         return
 
@@ -1419,7 +1419,6 @@ def page_predictive_maintenance():
         coach_ids,
         key="pm_coach"
     )
-    
 
     # ---------------- Run Prediction ----------------
     if st.button("Run Maintenance Check", key="pm_run"):
@@ -1427,40 +1426,35 @@ def page_predictive_maintenance():
         coach_data = coaches_collection.find_one(
             {"coach_id": selected_coach}
         )
-        
 
         if not coach_data:
             st.error("Coach details not found")
             return
-        
-        total_km, days_since_maintenance = calculate_features(coach_data)
-        vibration_level = round(min(0.1 + total_km / 250000, 1.0), 2)
-        brake_health = max(100 - (total_km / 2500), 20)
 
+        # 1️⃣ Base features
+        total_km, days_since_maintenance = calculate_features(coach_data)
+
+        # 2️⃣ Derived ML features
+        vibration_level = round(min(0.1 + total_km / 250000, 1.0), 2)
+        brake_health = round(max(100 - (total_km / 2500), 20), 1)
+
+        # 3️⃣ ML Prediction (ONLY ONE CALL ✅)
         risk_level, score = predict_maintenance_risk(
             total_km,
             vibration_level,
             brake_health
         )
-        
-
-        # <-- Use dynamic scoring function -->
-        risk_level, score = predict_maintenance_risk(total_km, days_since_maintenance)
 
         # ---------------- Output ----------------
         st.subheader(f"Train {selected_train} – Coach {selected_coach}")
+
         col1, col2, col3 = st.columns(3)
         col1.metric("Total KM Run", total_km)
-        col2.metric("Days Since Last Maintenance", days_since_maintenance)
-        col3.metric("Maintenance Status", risk_level)
-        c1, c2, c3 = st.columns(2)
-        c2.metric("Vibration Level", vibration_level)
-        c3.metric("Brake Health (%)", int(brake_health))
+        col2.metric("Vibration Level", vibration_level)
+        col3.metric("Brake Health (%)", brake_health)
 
         st.success(f"Maintenance Risk Level: **{risk_level}**")
 
-
-        # Animated speedometer
         animated_speedometer(score)
 
 
