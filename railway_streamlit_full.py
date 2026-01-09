@@ -1430,9 +1430,10 @@ def page_predictive_maintenance():
 
         # ---------------- Output ----------------
         st.subheader(f"Train {selected_train} – Coach {selected_coach}")
-        st.metric("Total KM Run", total_km)
-        st.metric("Days Since Last Maintenance", days_since_maintenance)
-        st.metric("Maintenance Status", risk_level)
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total KM Run", total_km)
+        col2.metric("Days Since Last Maintenance", days_since_maintenance)
+        col3.metric("Maintenance Status", risk_level)
 
         # Animated speedometer
         animated_speedometer(score)
@@ -1489,25 +1490,42 @@ def predict_maintenance_risk(total_km, days_since_maintenance):
 
 # ---------------- Animated Speedometer ----------------
 def animated_speedometer(score):
+    import plotly.graph_objects as go
+    import streamlit as st
+    import time
+
     placeholder = st.empty()
 
-    for value in range(0, score + 1, 5):
+    # Set gauge size smaller with 'width' and 'height'
+    fig = go.Figure()
+
+    # Animate in small increments for smooth effect
+    for value in range(0, score + 1, 2):  # smaller step = smoother animation
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=value,
+            number={'suffix': '%'},
             gauge={
                 "axis": {"range": [0, 100]},
-                "bar": {"color": "red" if score >= 70 else "orange" if score >= 40 else "green"},
+                "bar": {"color": "red" if value >= 70 else "orange" if value >= 40 else "green"},
                 "steps": [
                     {"range": [0, 40], "color": "green"},
                     {"range": [40, 70], "color": "orange"},
                     {"range": [70, 100], "color": "red"}
-                ]
+                ],
+                "threshold": {
+                    "line": {"color": "black", "width": 4},
+                    "thickness": 0.75,
+                    "value": value
+                }
             },
             title={"text": "Maintenance Risk Indicator"}
         ))
-        placeholder.plotly_chart(fig, use_container_width=True)
-        time.sleep(0.05)
+
+        # Display in placeholder with medium size
+        placeholder.plotly_chart(fig, use_container_width=False, width=450, height=350)
+        time.sleep(0.02)  # faster sleep = smoother animation
+
 # --- Router & sidebar ---
 PAGES = {
     'Dashboard': page_dashboard,
