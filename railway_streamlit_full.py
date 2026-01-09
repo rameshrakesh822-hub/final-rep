@@ -1376,8 +1376,8 @@ def page_engineer_list():
 client = MongoClient(MONGO_URI)
 db = client["railways_db"]  # Your database name
 
-trains_collection = db["trains"]
-coaches_collection = db["coaches"]
+trains_collection = db["train__coaches"]
+coaches_collection = db["train_coaches"]
 engineers_collection = db["engineers"]  # if you have this        
 def page_predictive_maintenance():
     st.title("Predictive Maintenance 🚆")
