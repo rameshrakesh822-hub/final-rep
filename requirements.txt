@@ -3,6 +3,11 @@ streamlit
 pandas
 PyJWT
 streamlit
+scikit-learn
+joblib
+python-dateutil
+pandas
+numpy
 pandas
 pymongo
 dnspython
