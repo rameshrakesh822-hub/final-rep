@@ -1381,6 +1381,14 @@ trains_collection = db["trains"]
 coaches_collection = db["coaches"]
 train_coaches_collection = db["train_coaches"]
 maintenance_records_collection = db["maintenance_records"]
+import pickle
+
+@st.cache_resource
+def load_rf_model():
+    with open("maintenance_rf_model.pkl", "rb") as f:
+        return pickle.load(f)
+
+rf_model = load_rf_model()
        
 def page_predictive_maintenance():
     st.title("Predictive Maintenance 🚆")
@@ -1411,6 +1419,14 @@ def page_predictive_maintenance():
         coach_ids,
         key="pm_coach"
     )
+    vibration_level = round(min(0.1 + total_km / 250000, 1.0), 2)
+    brake_health = max(100 - (total_km / 2500), 20)
+
+    risk_level, score = predict_maintenance_risk(
+        total_km,
+        vibration_level,
+        brake_health
+    )
 
     # ---------------- Run Prediction ----------------
     if st.button("Run Maintenance Check", key="pm_run"):
@@ -1434,6 +1450,12 @@ def page_predictive_maintenance():
         col1.metric("Total KM Run", total_km)
         col2.metric("Days Since Last Maintenance", days_since_maintenance)
         col3.metric("Maintenance Status", risk_level)
+        c1, c2, c3 = st.columns(2)
+        c2.metric("Vibration Level", vibration_level)
+        c3.metric("Brake Health (%)", int(brake_health))
+
+        st.success(f"Maintenance Risk Level: **{risk_level}**")
+
 
         # Animated speedometer
         animated_speedometer(score)
@@ -1459,33 +1481,22 @@ def calculate_features(coach_data):
 
 
 # ---------------- Dynamic Risk Scoring ----------------
-def predict_maintenance_risk(total_km, days_since_maintenance):
-    """
-    Returns dynamic risk score (0-100) based on km run and days since last maintenance
-    """
-    # Max thresholds (adjustable)
-    MAX_KM = 200000
-    MAX_DAYS = 120
+def predict_maintenance_risk(total_km, vibration, brake_health):
+    prediction = rf_model.predict(
+        [[total_km, vibration, brake_health]]
+    )[0]
 
-    # Scale km contribution
-    km_score = min(total_km / MAX_KM * 100, 100)
+    confidence = rf_model.predict_proba(
+        [[total_km, vibration, brake_health]]
+    ).max() * 100
 
-    # Scale days contribution
-    days_score = min(days_since_maintenance / MAX_DAYS * 100, 100)
-
-    # Weighted average (60% km, 40% days)
-    risk_score = 0.6 * km_score + 0.4 * days_score
-    risk_score = min(risk_score, 100)
-
-    # Determine risk level
-    if risk_score >= 70:
-        risk_level = "High"
-    elif risk_score >= 40:
-        risk_level = "Medium"
+    if prediction == 2:
+        return "High", int(confidence)
+    elif prediction == 1:
+        return "Medium", int(confidence)
     else:
-        risk_level = "Low"
+        return "Low", int(confidence)
 
-    return risk_level, int(risk_score)
 
 
 # ---------------- Animated Speedometer ----------------
