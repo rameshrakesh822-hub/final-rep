@@ -27,6 +27,9 @@ from dotenv import load_dotenv
 load_dotenv()
 import streamlit as st
 import pandas as pd
+from pymongo import MongoClient
+import pickle  # if using saved ML model
+import plotly.graph_objects as go  # for speedometer-style indicator
 
 # optional dependency
 try:
@@ -1307,6 +1310,78 @@ def page_engineer_list():
     else:
         st.info('No engineers yet. Add via \"Add Engineer\" page.')
 
+
+client = MongoClient(MONGO_URI)
+db = client["railway_system"]  # Your database name
+
+trains_collection = db["trains"]
+coaches_collection = db["coaches"]
+engineers_collection = db["engineers"]  # if you have this        
+def page_predictive_maintenance():
+    st.title("Predictive Maintenance 🚆")
+
+    # Select Train
+    train_ids = [t['train_id'] for t in trains_collection.find()]
+    selected_train = st.selectbox("Select Train ID", train_ids)
+
+    # Filter Coaches by Train
+    coaches = [c for c in coaches_collection.find({"train_id": selected_train})]
+    coach_ids = [c['coach_id'] for c in coaches]
+    selected_coach = st.selectbox("Select Coach ID", coach_ids)
+
+    if st.button("Run Maintenance Check"):
+        # Fetch coach data
+        coach_data = coaches_collection.find_one({"coach_id": selected_coach})
+
+        # Feature engineering
+        total_km, days_since_maintenance = calculate_features(coach_data)
+
+        # ML Prediction
+        risk_level, score = predict_maintenance_risk(total_km, days_since_maintenance)
+
+        # Display Results
+        st.subheader(f"Train: {selected_train} – Coach: {selected_coach}")
+        st.write(f"Total KM Run: {total_km}")
+        st.write(f"Days Since Last Maintenance: {days_since_maintenance}")
+        st.write(f"Maintenance Status: {risk_level}")
+
+        # Speedometer / Gauge Chart
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=score,
+            gauge={
+                'axis': {'range': [0, 100]},
+                'bar': {'color': "red" if risk_level=="High" else "orange" if risk_level=="Medium" else "green"},
+                'steps': [
+                    {'range': [0, 40], 'color': 'green'},
+                    {'range': [40, 70], 'color': 'orange'},
+                    {'range': [70, 100], 'color': 'red'}
+                ],
+                'threshold': {
+                    'line': {'color': "black", 'width': 4},
+                    'thickness': 0.75,
+                    'value': score
+                }
+            },
+            title={'text': "Maintenance Risk Indicator"}
+        ))
+        st.plotly_chart(fig, use_container_width=True)
+
+def calculate_features(coach_data):
+    today = datetime.today()
+    last_maint = coach_data.get("last_maintenance_date", today)
+    days_since_maintenance = (today - last_maint).days
+    total_km = coach_data.get("total_km_run", 0)
+    return total_km, days_since_maintenance
+
+def predict_maintenance_risk(total_km, days_since_maintenance):
+    if total_km > 200000 or days_since_maintenance > 120:
+        return "High", 90
+    elif total_km > 120000 or days_since_maintenance > 60:
+        return "Medium", 60
+    else:
+        return "Low", 30
+
 # --- Router & sidebar ---
 PAGES = {
     'Dashboard': page_dashboard,
@@ -1322,7 +1397,7 @@ PAGES = {
     'System Login': page_system_login,
     'System Logout': page_system_logout
 }
-
+PAGES["Predictive Maintenance"] = page_predictive_maintenance
 st.set_page_config(page_title='Railway Maintenance System', layout='wide')
 with st.sidebar:
     st.markdown('## Menu')
