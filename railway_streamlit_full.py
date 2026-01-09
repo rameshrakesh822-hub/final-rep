@@ -471,7 +471,7 @@ st.markdown("""
 
 .block-container {
     padding: 1rem;
-    padding-top: 3rem;   /* ✅ Space for top navbar */
+    padding-top: 0rem;   /* ✅ Space for top navbar */
     padding-bottom: 3rem;        
 }
 @media (max-width: 768px) {
