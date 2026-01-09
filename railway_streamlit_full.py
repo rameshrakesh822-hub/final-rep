@@ -1448,14 +1448,38 @@ def page_predictive_maintenance():
         # ---------------- Output ----------------
         st.subheader(f"Train {selected_train} – Coach {selected_coach}")
 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Total KM Run", total_km)
-        col2.metric("Vibration Level", vibration_level)
-        col3.metric("Brake Health (%)", brake_health)
+        # ---------------- Horizontal Level Indicators ----------------
+        st.subheader("Condition Indicators")
+
+        # --- Total KM Indicator ---
+        MAX_KM = 33000
+        km_pct = int(min((total_km / MAX_KM) * 100, 100))
+        st.markdown(f"**Total KM Run:** {total_km} km / {MAX_KM} km ({km_pct}%)")
+        st.progress(km_pct)
+
+        # --- Vibration Indicator ---
+        vibration_pct = int(vibration_level * 100)
+        st.markdown(f"**Vibration Level:** {vibration_pct}%")
+        st.progress(vibration_pct)
+
+        # --- Brake Health Indicator ---
+        brake_pct = int(brake_health)
+        st.markdown(f"**Brake Health:** {brake_pct}%")
+        st.progress(brake_pct)
+
 
         st.success(f"Maintenance Risk Level: **{risk_level}**")
 
-        animated_speedometer(score)
+        st.subheader("Overall Maintenance Risk")
+
+        if score >= 70:
+            st.error(f"⚠ High Risk — {score}%")
+        elif score >= 40:
+            st.warning(f"⚠ Medium Risk — {score}%")
+        else:
+            st.success(f"✔ Low Risk — {score}%")
+
+        st.progress(score)
 
 
 # ---------------- Calculate Features ----------------
@@ -1483,56 +1507,24 @@ def predict_maintenance_risk(total_km, vibration, brake_health):
         [[total_km, vibration, brake_health]]
     )[0]
 
-    confidence = rf_model.predict_proba(
-        [[total_km, vibration, brake_health]]
-    ).max() * 100
+    # ---- Proper risk scoring ----
+    km_score = min((total_km / 33000) * 40, 40)
+    vibration_score = vibration * 30
+    brake_score = (100 - brake_health) * 0.3
+
+    risk_score = int(min(km_score + vibration_score + brake_score, 100))
 
     if prediction == 2:
-        return "High", int(confidence)
+        return "High", risk_score
     elif prediction == 1:
-        return "Medium", int(confidence)
+        return "Medium", risk_score
     else:
-        return "Low", int(confidence)
+        return "Low", risk_score
+
 
 
 
 # ---------------- Animated Speedometer ----------------
-def animated_speedometer(score):
-    import plotly.graph_objects as go
-    import streamlit as st
-    import time
-
-    placeholder = st.empty()
-
-    # Set gauge size smaller with 'width' and 'height'
-    fig = go.Figure()
-
-    # Animate in small increments for smooth effect
-    for value in range(0, score + 1, 2):  # smaller step = smoother animation
-        fig = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=value,
-            number={'suffix': '%'},
-            gauge={
-                "axis": {"range": [0, 100]},
-                "bar": {"color": "red" if value >= 70 else "orange" if value >= 40 else "green"},
-                "steps": [
-                    {"range": [0, 40], "color": "green"},
-                    {"range": [40, 70], "color": "orange"},
-                    {"range": [70, 100], "color": "red"}
-                ],
-                "threshold": {
-                    "line": {"color": "black", "width": 4},
-                    "thickness": 0.75,
-                    "value": value
-                }
-            },
-            title={"text": "Maintenance Risk Indicator"}
-        ))
-
-        # Display in placeholder with medium size
-        placeholder.plotly_chart(fig, use_container_width=False, width=450, height=350)
-        time.sleep(0.02)  # faster sleep = smoother animation
 
 # --- Router & sidebar ---
 PAGES = {
