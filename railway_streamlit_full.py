@@ -1405,7 +1405,6 @@ def page_predictive_maintenance():
         return
 
     coach_ids = sorted(tc["coach_id"] for tc in train_coach_docs)
-    st.write("DEBUG train_coaches:", train_coach_docs)
     selected_coach = st.selectbox(
         "Select Coach ID",
         coach_ids,
