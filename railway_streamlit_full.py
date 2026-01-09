@@ -471,7 +471,8 @@ st.markdown("""
 
 .block-container {
     padding: 1rem;
-    padding-top: 5.5rem;   /* ✅ Space for top navbar */
+    padding-top: 3rem;   /* ✅ Space for top navbar */
+    padding-bottom: 3rem;        
 }
 @media (max-width: 768px) {
     .stColumns {
@@ -1447,10 +1448,6 @@ def page_predictive_maintenance():
 
         # ---------------- Output ----------------
         st.subheader(f"Train {selected_train} – Coach {selected_coach}")
-
-        # ---------------- Horizontal Level Indicators ----------------
-        st.subheader("Condition Indicators")
-
         # ---------------- Horizontal Level Indicators with controlled width ----------------
         st.subheader("Condition Indicators")
 
