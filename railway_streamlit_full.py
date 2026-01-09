@@ -1419,14 +1419,7 @@ def page_predictive_maintenance():
         coach_ids,
         key="pm_coach"
     )
-    vibration_level = round(min(0.1 + total_km / 250000, 1.0), 2)
-    brake_health = max(100 - (total_km / 2500), 20)
-
-    risk_level, score = predict_maintenance_risk(
-        total_km,
-        vibration_level,
-        brake_health
-    )
+    
 
     # ---------------- Run Prediction ----------------
     if st.button("Run Maintenance Check", key="pm_run"):
@@ -1434,12 +1427,22 @@ def page_predictive_maintenance():
         coach_data = coaches_collection.find_one(
             {"coach_id": selected_coach}
         )
+        
 
         if not coach_data:
             st.error("Coach details not found")
             return
-
+        
         total_km, days_since_maintenance = calculate_features(coach_data)
+        vibration_level = round(min(0.1 + total_km / 250000, 1.0), 2)
+        brake_health = max(100 - (total_km / 2500), 20)
+
+        risk_level, score = predict_maintenance_risk(
+            total_km,
+            vibration_level,
+            brake_health
+        )
+        
 
         # <-- Use dynamic scoring function -->
         risk_level, score = predict_maintenance_risk(total_km, days_since_maintenance)
