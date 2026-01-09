@@ -1374,7 +1374,7 @@ def page_engineer_list():
 
 
 client = MongoClient(MONGO_URI)
-db = client["railway_system"]  # Your database name
+db = client["railways_db"]  # Your database name
 
 trains_collection = db["trains"]
 coaches_collection = db["coaches"]
