@@ -1425,9 +1425,8 @@ def page_predictive_maintenance():
 
         total_km, days_since_maintenance = calculate_features(coach_data)
 
-        risk_level, score = predict_maintenance_risk(
-            total_km, days_since_maintenance
-        )
+        # <-- Use dynamic scoring function -->
+        risk_level, score = predict_maintenance_risk(total_km, days_since_maintenance)
 
         # ---------------- Output ----------------
         st.subheader(f"Train {selected_train} – Coach {selected_coach}")
@@ -1435,12 +1434,11 @@ def page_predictive_maintenance():
         st.metric("Days Since Last Maintenance", days_since_maintenance)
         st.metric("Maintenance Status", risk_level)
 
+        # Animated speedometer
         animated_speedometer(score)
 
 
-
-
-
+# ---------------- Calculate Features ----------------
 def calculate_features(coach_data):
     today = datetime.today()
 
@@ -1458,13 +1456,38 @@ def calculate_features(coach_data):
 
     return total_km, days_since_maintenance
 
+
+# ---------------- Dynamic Risk Scoring ----------------
 def predict_maintenance_risk(total_km, days_since_maintenance):
-    if total_km > 200000 or days_since_maintenance > 120:
-        return "High", 90
-    elif total_km > 120000 or days_since_maintenance > 60:
-        return "Medium", 60
+    """
+    Returns dynamic risk score (0-100) based on km run and days since last maintenance
+    """
+    # Max thresholds (adjustable)
+    MAX_KM = 200000
+    MAX_DAYS = 120
+
+    # Scale km contribution
+    km_score = min(total_km / MAX_KM * 100, 100)
+
+    # Scale days contribution
+    days_score = min(days_since_maintenance / MAX_DAYS * 100, 100)
+
+    # Weighted average (60% km, 40% days)
+    risk_score = 0.6 * km_score + 0.4 * days_score
+    risk_score = min(risk_score, 100)
+
+    # Determine risk level
+    if risk_score >= 70:
+        risk_level = "High"
+    elif risk_score >= 40:
+        risk_level = "Medium"
     else:
-        return "Low", 30
+        risk_level = "Low"
+
+    return risk_level, int(risk_score)
+
+
+# ---------------- Animated Speedometer ----------------
 def animated_speedometer(score):
     placeholder = st.empty()
 
@@ -1483,7 +1506,6 @@ def animated_speedometer(score):
             },
             title={"text": "Maintenance Risk Indicator"}
         ))
-
         placeholder.plotly_chart(fig, use_container_width=True)
         time.sleep(0.05)
 # --- Router & sidebar ---
