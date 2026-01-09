@@ -1451,35 +1451,36 @@ def page_predictive_maintenance():
         # ---------------- Horizontal Level Indicators ----------------
         st.subheader("Condition Indicators")
 
-        # --- Total KM Indicator ---
+        # ---------------- Horizontal Level Indicators with controlled width ----------------
+        st.subheader("Condition Indicators")
+
         MAX_KM = 33000
         km_pct = int(min((total_km / MAX_KM) * 100, 100))
-        st.markdown(f"**Total KM Run:** {total_km} km / {MAX_KM} km ({km_pct}%)")
-        st.progress(km_pct)
-
-        # --- Vibration Indicator ---
         vibration_pct = int(vibration_level * 100)
-        st.markdown(f"**Vibration Level:** {vibration_pct}%")
-        st.progress(vibration_pct)
-
-        # --- Brake Health Indicator ---
         brake_pct = int(brake_health)
-        st.markdown(f"**Brake Health:** {brake_pct}%")
-        st.progress(brake_pct)
 
+        # Wrap each progress bar in columns to control width
+        col1, col2, col3 = st.columns([1, 3, 1])  # middle column will contain the progress bar
+        with col2:
+            st.markdown(f"**Total KM Run:** {total_km} km / {MAX_KM} km ({km_pct}%)")
+            st.progress(km_pct)
 
-        st.success(f"Maintenance Risk Level: **{risk_level}**")
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            st.markdown(f"**Vibration Level:** {vibration_pct}%")
+            st.progress(vibration_pct)
 
-        st.subheader("Overall Maintenance Risk")
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            st.markdown(f"**Brake Health:** {brake_pct}%")
+            st.progress(brake_pct)
 
-        if score >= 70:
-            st.error(f"⚠ High Risk — {score}%")
-        elif score >= 40:
-            st.warning(f"⚠ Medium Risk — {score}%")
-        else:
-            st.success(f"✔ Low Risk — {score}%")
+        # Overall Maintenance Risk
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            st.markdown(f"**Maintenance Risk:** {risk_level} — {score}%")
+            st.progress(score)
 
-        st.progress(score)
 
 
 # ---------------- Calculate Features ----------------
