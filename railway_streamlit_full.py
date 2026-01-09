@@ -30,6 +30,7 @@ import pandas as pd
 from pymongo import MongoClient
 import pickle  # if using saved ML model
 import plotly.graph_objects as go  # for speedometer-style indicator
+import time
 
 # optional dependency
 try:
@@ -1434,30 +1435,27 @@ def page_predictive_maintenance():
         st.metric("Days Since Last Maintenance", days_since_maintenance)
         st.metric("Maintenance Status", risk_level)
 
-        fig = go.Figure(go.Indicator(
-            mode="gauge+number",
-            value=score,
-            gauge={
-                "axis": {"range": [0, 100]},
-                "steps": [
-                    {"range": [0, 40], "color": "green"},
-                    {"range": [40, 70], "color": "orange"},
-                    {"range": [70, 100], "color": "red"}
-                ],
-            },
-            title={"text": "Maintenance Risk Indicator"}
-        ))
+        animated_speedometer(score)
 
-        st.plotly_chart(fig, use_container_width=True)
 
 
 
 
 def calculate_features(coach_data):
     today = datetime.today()
-    last_maint = coach_data.get("last_maintenance_date", today)
-    days_since_maintenance = (today - last_maint).days
-    total_km = coach_data.get("total_km_run", 0)
+
+    # --- Parse KM correctly ---
+    total_km = coach_data.get("km_run", 0)
+
+    # --- Parse Date correctly ---
+    last_maint_str = coach_data.get("last_maintenance")
+
+    if last_maint_str:
+        last_maint = datetime.strptime(last_maint_str, "%d.%m.%Y")
+        days_since_maintenance = (today - last_maint).days
+    else:
+        days_since_maintenance = 0
+
     return total_km, days_since_maintenance
 
 def predict_maintenance_risk(total_km, days_since_maintenance):
@@ -1467,7 +1465,27 @@ def predict_maintenance_risk(total_km, days_since_maintenance):
         return "Medium", 60
     else:
         return "Low", 30
+def animated_speedometer(score):
+    placeholder = st.empty()
 
+    for value in range(0, score + 1, 5):
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=value,
+            gauge={
+                "axis": {"range": [0, 100]},
+                "bar": {"color": "red" if score >= 70 else "orange" if score >= 40 else "green"},
+                "steps": [
+                    {"range": [0, 40], "color": "green"},
+                    {"range": [40, 70], "color": "orange"},
+                    {"range": [70, 100], "color": "red"}
+                ]
+            },
+            title={"text": "Maintenance Risk Indicator"}
+        ))
+
+        placeholder.plotly_chart(fig, use_container_width=True)
+        time.sleep(0.05)
 # --- Router & sidebar ---
 PAGES = {
     'Dashboard': page_dashboard,
