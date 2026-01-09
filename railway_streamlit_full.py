@@ -1377,57 +1377,82 @@ client = MongoClient(MONGO_URI)
 db = client["railways_db"]  # Your database name
 
 trains_collection = db["trains"]
-coaches_collection = db["train_coaches"]
-engineers_collection = db["engineers"]  # if you have this        
+coaches_collection = db["coaches"]
+train_coaches_collection = db["train_coaches"]
+maintenance_records_collection = db["maintenance_records"]
+       
 def page_predictive_maintenance():
     st.title("Predictive Maintenance 🚆")
 
-    # Select Train
-    train_ids = [t['train_no'] for t in trains_collection.find()]
-    selected_train = st.selectbox("Select Train ID", train_ids)
+    # ---------------- Select Train ----------------
+    train_nos = sorted(
+        list(set(t["train_no"] for t in trains_collection.find()))
+    )
 
-    # Filter Coaches by Train
-    coaches = [c for c in coaches_collection.find({"train_no": selected_train})]
-    coach_ids = [c['coach_id'] for c in coaches]
-    selected_coach = st.selectbox("Select Coach ID", coach_ids)
+    selected_train = st.selectbox(
+        "Select Train Number",
+        train_nos,
+        key="pm_train"
+    )
 
-    if st.button("Run Maintenance Check"):
-        # Fetch coach data
-        coach_data = coaches_collection.find_one({"coach_id": selected_coach})
+    # ---------------- Select Coach ----------------
+    train_coach_docs = list(
+        train_coaches_collection.find({"train_no": selected_train})
+    )
 
-        # Feature engineering
+    if len(train_coach_docs) == 0:
+        st.warning("No coaches mapped to this train")
+        return
+
+    coach_ids = sorted(tc["coach_id"] for tc in train_coach_docs)
+    st.write("DEBUG train_coaches:", train_coach_docs)
+    selected_coach = st.selectbox(
+        "Select Coach ID",
+        coach_ids,
+        key="pm_coach"
+    )
+
+    # ---------------- Run Prediction ----------------
+    if st.button("Run Maintenance Check", key="pm_run"):
+
+        coach_data = coaches_collection.find_one(
+            {"coach_id": selected_coach}
+        )
+
+        if not coach_data:
+            st.error("Coach details not found")
+            return
+
         total_km, days_since_maintenance = calculate_features(coach_data)
 
-        # ML Prediction
-        risk_level, score = predict_maintenance_risk(total_km, days_since_maintenance)
+        risk_level, score = predict_maintenance_risk(
+            total_km, days_since_maintenance
+        )
 
-        # Display Results
-        st.subheader(f"Train: {selected_train} – Coach: {selected_coach}")
-        st.write(f"Total KM Run: {total_km}")
-        st.write(f"Days Since Last Maintenance: {days_since_maintenance}")
-        st.write(f"Maintenance Status: {risk_level}")
+        # ---------------- Output ----------------
+        st.subheader(f"Train {selected_train} – Coach {selected_coach}")
+        st.metric("Total KM Run", total_km)
+        st.metric("Days Since Last Maintenance", days_since_maintenance)
+        st.metric("Maintenance Status", risk_level)
 
-        # Speedometer / Gauge Chart
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=score,
             gauge={
-                'axis': {'range': [0, 100]},
-                'bar': {'color': "red" if risk_level=="High" else "orange" if risk_level=="Medium" else "green"},
-                'steps': [
-                    {'range': [0, 40], 'color': 'green'},
-                    {'range': [40, 70], 'color': 'orange'},
-                    {'range': [70, 100], 'color': 'red'}
+                "axis": {"range": [0, 100]},
+                "steps": [
+                    {"range": [0, 40], "color": "green"},
+                    {"range": [40, 70], "color": "orange"},
+                    {"range": [70, 100], "color": "red"}
                 ],
-                'threshold': {
-                    'line': {'color': "black", 'width': 4},
-                    'thickness': 0.75,
-                    'value': score
-                }
             },
-            title={'text': "Maintenance Risk Indicator"}
+            title={"text": "Maintenance Risk Indicator"}
         ))
+
         st.plotly_chart(fig, use_container_width=True)
+
+
+
 
 def calculate_features(coach_data):
     today = datetime.today()
