@@ -1383,11 +1383,11 @@ def page_predictive_maintenance():
     st.title("Predictive Maintenance 🚆")
 
     # Select Train
-    train_ids = [t['train_id'] for t in trains_collection.find()]
+    train_ids = [t['train_no'] for t in trains_collection.find()]
     selected_train = st.selectbox("Select Train ID", train_ids)
 
     # Filter Coaches by Train
-    coaches = [c for c in coaches_collection.find({"train_id": selected_train})]
+    coaches = [c for c in coaches_collection.find({"train_no": selected_train})]
     coach_ids = [c['coach_id'] for c in coaches]
     selected_coach = st.selectbox("Select Coach ID", coach_ids)
 
