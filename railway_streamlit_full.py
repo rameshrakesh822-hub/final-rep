@@ -60,14 +60,24 @@ st.markdown("""
 
 /* ---------- SIDEBAR ---------- */
 section[data-testid="stSidebar"] {
-    background-color: #EAF3FF;
-    border-right: 1px solid #e5e7eb;
+    background-color: #dbeafe !important;  /* slightly darker than main */
+    border-right: 2px solid #93c5fd;       /* clear separation line */
+    z-index: 1200 !important;
 }
 
 /* Sidebar text */
 section[data-testid="stSidebar"] * {
     color: #0f172a !important;
 }
+/* Main content card look */
+.block-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+
+
 
 /* ---------- HEADER ---------- */
 header {
