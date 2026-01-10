@@ -42,47 +42,67 @@ except Exception:
 
 # JWT is still used by the app
 import jwt
+st.set_page_config(
+    page_title="Indian Railways Maintenance System",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 st.markdown("""
 <style>
 
-/* ---------- MAIN APP BACKGROUND ---------- */
+/* ---------- APP BACKGROUND ---------- */
 [data-testid="stAppViewContainer"] {
-    background-color: #EAF3FF;
+    background-color: #EAF3FF !important;
 }
 
-/* ---------- MAIN CONTENT AREA ---------- */
+/* ---------- MAIN DASHBOARD CARD ---------- */
 .block-container {
-    padding-top: 1.5rem !important;   /* ✅ normal top spacing */
-    padding-bottom: 4rem !important;  /* ✅ space at bottom */
-    padding-left: 1.5rem !important;
-    padding-right: 1.5rem !important;
-}
-
-/* ---------- SIDEBAR ---------- */
-section[data-testid="stSidebar"] {
-    background-color: #dbeafe !important;  /* slightly darker than main */
-    border-right: 2px solid #93c5fd;       /* clear separation line */
-    z-index: 1200 !important;
-}
-
-/* Sidebar text */
-section[data-testid="stSidebar"] * {
-    color: #0f172a !important;
-}
-/* Main content card look */
-.block-container {
-    background-color: #ffffff;
+    background-color: #ffffff !important;
+    padding: 1.5rem !important;
+    padding-bottom: 4rem !important;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* ---------- FORCE LIGHT TEXT IN MAIN CONTENT ---------- */
+.block-container * {
+    color: #0f172a !important;
+}
 
+/* ---------- SIDEBAR ---------- */
+section[data-testid="stSidebar"] {
+    background-color: #dbeafe !important;
+    border-right: 2px solid #93c5fd;
+    z-index: 1200 !important;
+}
 
+section[data-testid="stSidebar"] * {
+    color: #0f172a !important;
+}
 
 /* ---------- HEADER ---------- */
 header {
     background: transparent !important;
     box-shadow: none !important;
+}
+
+/* ---------- METRICS ---------- */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"] {
+    color: #0f172a !important;
+}
+
+/* ---------- BUTTONS ---------- */
+button {
+    background-color: #2563eb !important;
+    color: white !important;
+    border-radius: 6px;
+}
+
+/* ---------- TABLE ---------- */
+[data-testid="stDataFrame"] {
+    width: 100% !important;
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -94,11 +114,6 @@ header {
     button {
         width: 100%;
     }
-}
-
-/* ---------- TABLE ---------- */
-[data-testid="stDataFrame"] {
-    width: 100% !important;
 }
 
 </style>
