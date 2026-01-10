@@ -104,6 +104,30 @@ button {
 [data-testid="stDataFrame"] {
     width: 100% !important;
 }
+/* ---------- FIX INPUT TEXT VISIBILITY ---------- */
+
+/* Text typed inside inputs */
+input, textarea {
+    color: #0f172a !important;       /* text color */
+    background-color: #ffffff !important;
+}
+
+/* Selectbox / dropdown selected value */
+[data-testid="stSelectbox"] div {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+}
+
+/* Placeholder text */
+input::placeholder {
+    color: #64748b !important;       /* gray placeholder */
+}
+
+/* Number input arrows & text */
+[data-testid="stNumberInput"] input {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+}
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
