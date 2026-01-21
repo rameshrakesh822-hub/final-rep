@@ -1351,18 +1351,28 @@ def page_add_engineer():
 def page_engineer_list():
     page_top_bar()
     st.subheader('Engineers')
+
     with get_conn() as conn:
         if USE_MONGO:
-            rows = list(conn.db.engineers.find({}, {'_id':0}).sort('username',1))
+            # ✅ Explicitly exclude password_hash
+            rows = list(
+                conn.db.engineers.find(
+                    {},
+                    {'_id': 0, 'password_hash': 0}
+                ).sort('username', 1)
+            )
         else:
             cur = conn.cursor()
+            # ✅ Select only required column
             cur.execute('SELECT username FROM engineers ORDER BY username')
             rows = cur.fetchall()
+
     if rows:
         df = pd.DataFrame(rows)
-        st.dataframe(df, width='stretch')
+        st.dataframe(df, use_container_width=True)
     else:
-        st.info('No engineers yet. Add via \"Add Engineer\" page.')
+        st.info('No engineers yet. Add via "Add Engineer" page.')
+
 
 
 client = MongoClient(MONGO_URI)
