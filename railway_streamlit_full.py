@@ -53,7 +53,7 @@ st.markdown("""
 
 /* ---------- APP BACKGROUND ---------- */
 [data-testid="stAppViewContainer"] {
-    background-color: #18181b !important;   /* dark gray (NOT navy) */
+    background-color: #DADADA !important;   /* dark gray (NOT navy) */
 }
 
 /* ---------- MAIN CONTENT CARD ---------- */
@@ -94,7 +94,7 @@ header {
 
 /* ---------- BUTTONS (PURPLE) ---------- */
 button {
-    background: #4B365F !important;
+    background: #de5d83 !important;
     color: white !important;
     border-radius: 8px;
     border: none !important;
@@ -134,7 +134,7 @@ input::placeholder {
 
 /* ---------- PROGRESS BAR ---------- */
 [data-testid="stProgress"] > div > div {
-    background: linear-gradient(90deg, #9333ea, #7c3aed) !important;
+    background: #5DDE6C !important;
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -207,6 +207,18 @@ form {
 
 </style>
 """, unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    /* Increase height of Streamlit progress bar */
+    div[data-testid="stProgress"] > div > div > div {
+        height: 30px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 
 
@@ -1459,18 +1471,7 @@ def load_rf_model():
 rf_model = load_rf_model()
        
 def page_predictive_maintenance():
-    st.markdown(
-    """
-    <style>
-    /* Increase height of Streamlit progress bar */
-    div[data-testid="stProgress"] > div > div > div {
-        height: 30px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
+    
     st.title("Predictive Maintenance 🚆")
 
     # ---------------- Select Train ----------------
