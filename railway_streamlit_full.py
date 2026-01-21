@@ -58,7 +58,7 @@ st.markdown("""
 
 /* ---------- MAIN CONTENT CARD ---------- */
 .block-container {
-    background-color: #0f0f11 !important;   /* deep charcoal */
+    background-color: #3B3D40 !important;   /* deep charcoal */
     padding: 1.5rem !important;
     padding-bottom: 4rem !important;
     border-radius: 12px;
@@ -73,7 +73,7 @@ st.markdown("""
 /* ---------- SIDEBAR ---------- */
 section[data-testid="stSidebar"] {
     background-color: #0f0f11 !important;
-    border-right: 2px solid #9333ea;   /* purple accent */
+    border-right: 2px solid #C8D1F7;   /* purple accent */
 }
 
 section[data-testid="stSidebar"] * {
@@ -94,7 +94,7 @@ header {
 
 /* ---------- BUTTONS (PURPLE) ---------- */
 button {
-    background: #BCADE0 !important;
+    background: #4B365F !important;
     color: white !important;
     border-radius: 8px;
     border: none !important;
