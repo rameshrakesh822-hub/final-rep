@@ -334,21 +334,17 @@ class FakeConn:
     def close(self):
         return None
 
-
+@st.cache_resource
+def get_mongo_client():
+    return MongoClient(MONGO_URI)
 @contextmanager
 def get_conn():
-    """Context manager that yields either a real sqlite3 connection (fallback) or a fake Mongo-backed connection."""
     if USE_MONGO:
-        client = MongoClient(MONGO_URI)
-        # database name will be the path's last element or 'railways_db' default
+        client = get_mongo_client()   # ✅ cached
         dbname = os.environ.get('MONGO_DBNAME', 'railways_db')
         db = client[dbname]
-        try:
-            yield FakeConn(db)
-        finally:
-            client.close()
+        yield FakeConn(db)
     else:
-        # fallback to sqlite for local dev/if MONGO_URI not set
         import sqlite3
         conn = sqlite3.connect(DB_PATH, check_same_thread=False)
         conn.row_factory = sqlite3.Row
@@ -356,6 +352,7 @@ def get_conn():
             yield conn
         finally:
             conn.close()
+
 
 # ----------------- init_db for Mongo -----------------
 
