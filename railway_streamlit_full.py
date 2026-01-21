@@ -94,7 +94,7 @@ header {
 
 /* ---------- BUTTONS (PURPLE) ---------- */
 button {
-    background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
+    background: #BCADE0 !important;
     color: white !important;
     border-radius: 8px;
     border: none !important;
@@ -150,6 +150,64 @@ input::placeholder {
 
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+
+/* ---------- REMOVE HEADER OUTLINES ---------- */
+h1, h2, h3, h4, h5, h6 {
+    border: none !important;
+    outline: none !important;
+}
+
+/* ---------- INPUTS (NO BORDER) ---------- */
+input, textarea {
+    background-color: #18181b !important;
+    color: #e5e7eb !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    border-radius: 6px;
+}
+
+/* ---------- REMOVE FOCUS OUTLINE ---------- */
+input:focus, textarea:focus {
+    outline: none !important;
+    box-shadow: inset 0 0 0 1px rgba(147,51,234,0.6);
+}
+
+/* ---------- SELECTBOX (NO BORDER) ---------- */
+[data-testid="stSelectbox"] div {
+    background-color: #18181b !important;
+    color: #e5e7eb !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    border-radius: 6px;
+}
+
+/* Focus state for selectbox */
+[data-testid="stSelectbox"] div:focus-within {
+    box-shadow: inset 0 0 0 1px rgba(147,51,234,0.6);
+}
+
+/* ---------- REMOVE STREAMLIT DEFAULT FIELDSET BORDERS ---------- */
+fieldset {
+    border: none !important;
+}
+
+/* ---------- REMOVE FORM BORDERS ---------- */
+form {
+    border: none !important;
+}
+
+/* ---------- REMOVE EXPANDER BORDER ---------- */
+[data-testid="stExpander"] {
+    border: none !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 
 
