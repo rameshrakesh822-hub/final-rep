@@ -53,32 +53,31 @@ st.markdown("""
 
 /* ---------- APP BACKGROUND ---------- */
 [data-testid="stAppViewContainer"] {
-    background-color: #EAF3FF !important;
+    background-color: #18181b !important;   /* dark gray (NOT navy) */
 }
 
-/* ---------- MAIN DASHBOARD CARD ---------- */
+/* ---------- MAIN CONTENT CARD ---------- */
 .block-container {
-    background-color: #ffffff !important;
+    background-color: #0f0f11 !important;   /* deep charcoal */
     padding: 1.5rem !important;
     padding-bottom: 4rem !important;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
 }
 
-/* ---------- FORCE LIGHT TEXT IN MAIN CONTENT ---------- */
+/* ---------- TEXT COLOR ---------- */
 .block-container * {
-    color: #0f172a !important;
+    color: #e5e7eb !important;   /* light gray */
 }
 
 /* ---------- SIDEBAR ---------- */
 section[data-testid="stSidebar"] {
-    background-color: #dbeafe !important;
-    border-right: 2px solid #93c5fd;
-    z-index: 1200 !important;
+    background-color: #0f0f11 !important;
+    border-right: 2px solid #9333ea;   /* purple accent */
 }
 
 section[data-testid="stSidebar"] * {
-    color: #0f172a !important;
+    color: #e5e7eb !important;
 }
 
 /* ---------- HEADER ---------- */
@@ -90,43 +89,52 @@ header {
 /* ---------- METRICS ---------- */
 [data-testid="stMetricLabel"],
 [data-testid="stMetricValue"] {
-    color: #0f172a !important;
+    color: #e5e7eb !important;
 }
 
-/* ---------- BUTTONS ---------- */
+/* ---------- BUTTONS (PURPLE) ---------- */
 button {
-    background-color: #2563eb !important;
+    background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
     color: white !important;
-    border-radius: 6px;
+    border-radius: 8px;
+    border: none !important;
+    font-weight: 600;
 }
 
-/* ---------- TABLE ---------- */
-[data-testid="stDataFrame"] {
-    width: 100% !important;
+button:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+    transform: scale(1.03);
 }
-/* ---------- FIX INPUT TEXT VISIBILITY ---------- */
 
-/* Text typed inside inputs */
+/* ---------- INPUTS ---------- */
 input, textarea {
-    color: #0f172a !important;       /* text color */
-    background-color: #ffffff !important;
-}
-
-/* Selectbox / dropdown selected value */
-[data-testid="stSelectbox"] div {
-    color: #0f172a !important;
-    background-color: #ffffff !important;
+    background-color: #18181b !important;
+    color: #e5e7eb !important;
+    border: 1px solid #9333ea !important;
+    border-radius: 6px;
 }
 
 /* Placeholder text */
 input::placeholder {
-    color: #64748b !important;       /* gray placeholder */
+    color: #a1a1aa !important;
 }
 
-/* Number input arrows & text */
-[data-testid="stNumberInput"] input {
-    color: #0f172a !important;
-    background-color: #ffffff !important;
+/* ---------- SELECTBOX ---------- */
+[data-testid="stSelectbox"] div {
+    background-color: #18181b !important;
+    color: #e5e7eb !important;
+    border: 1px solid #9333ea !important;
+}
+
+/* ---------- TABLE ---------- */
+[data-testid="stDataFrame"] {
+    background-color: #0f0f11 !important;
+    border-radius: 8px;
+}
+
+/* ---------- PROGRESS BAR ---------- */
+[data-testid="stProgress"] > div > div {
+    background: linear-gradient(90deg, #9333ea, #7c3aed) !important;
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -142,6 +150,7 @@ input::placeholder {
 
 </style>
 """, unsafe_allow_html=True)
+
 
 
 # ---------------- CONFIG ----------------
