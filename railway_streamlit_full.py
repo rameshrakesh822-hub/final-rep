@@ -72,12 +72,12 @@ st.markdown("""
 
 /* ---------- SIDEBAR ---------- */
 section[data-testid="stSidebar"] {
-    background-color: #DADADA  !important;
+    background-color: #DADADA !important;
     border-right: 2px solid #C8D1F7;   /* purple accent */
 }
 
 section[data-testid="stSidebar"] * {
-    color: #DADADA  !important;
+    color: #e5e7eb !important;
 }
 
 /* ---------- HEADER ---------- */
