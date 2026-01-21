@@ -1392,6 +1392,18 @@ def load_rf_model():
 rf_model = load_rf_model()
        
 def page_predictive_maintenance():
+    st.markdown(
+    """
+    <style>
+    /* Increase height of Streamlit progress bar */
+    div[data-testid="stProgress"] > div > div > div {
+        height: 30px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
     st.title("Predictive Maintenance 🚆")
 
     # ---------------- Select Train ----------------
