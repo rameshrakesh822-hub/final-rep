@@ -218,7 +218,50 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+st.markdown("""
+<style>
+/* progress bar height */
+</style>
+""", unsafe_allow_html=True)
 
+# 4️⃣ 👉 PASTE THE SIDEBAR FIX HERE (LAST)
+st.markdown("""
+<style>
+
+/* ---------- FIX SIDEBAR VISIBILITY ---------- */
+section[data-testid="stSidebar"] {
+    background-color: #DADADA !important;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #1f2937 !important;
+}
+
+section[data-testid="stSidebar"] input,
+section[data-testid="stSidebar"] textarea {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+}
+
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] div {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+}
+
+section[data-testid="stSidebar"] button {
+    background-color: #de5d83 !important;
+    color: white !important;
+}
+
+/* Keep main content light text */
+.block-container * {
+    color: #e5e7eb !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 
