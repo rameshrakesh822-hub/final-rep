@@ -58,7 +58,7 @@ st.markdown("""
 
 /* ---------- MAIN DASHBOARD CARD ---------- */
 .block-container {
-    background-color: #ffffff !important;
+    background-color: #595252 !important;
     padding: 1.5rem !important;
     padding-bottom: 4rem !important;
     border-radius: 10px;
