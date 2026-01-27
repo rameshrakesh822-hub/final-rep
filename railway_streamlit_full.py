@@ -1578,7 +1578,7 @@ def page_predictive_maintenance():
         km_pct = int(min((total_km / MAX_KM) * 100, 100))
         vibration_pct = int(vibration_level * 100)
         brake_pct = int(brake_health)
-
+        # temp
         # Wrap each progress bar in columns to control width
         col1, col2, col3 = st.columns([1, 3, 1])  # middle column will contain the progress bar
         with col2:
